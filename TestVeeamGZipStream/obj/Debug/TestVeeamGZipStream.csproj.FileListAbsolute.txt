@@ -1,0 +1,14 @@
+E:\Дима\Programer\TestVeeamGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.csproj.CoreCompileInputs.cache
+E:\Дима\Programer\TestVeeamGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.exe
+E:\Дима\Programer\TestVeeamGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.pdb
+E:\Дима\Programer\TestVeeamGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.exe
+E:\Дима\Programer\TestVeeamGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.pdb
+E:\Дима\Programer\TestVeeamGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.csprojAssemblyReference.cache
+E:\Дима\Programer\TestVeeamGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.exe.config
+E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.exe.config
+E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.exe
+E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.pdb
+E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.csprojAssemblyReference.cache
+E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.csproj.CoreCompileInputs.cache
+E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.exe
+E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.pdb
