@@ -6,30 +6,29 @@ namespace TestVeeamGZipStream.Concurrency
 {
     public class ProducerConsumer<T> where T : class
     {
-        object locker = new object(); //Блокируемый объект для синхронизации потоков
-        Queue<T> queue = new Queue<T>(); //Очередь задач
-        bool isStopped = false;
-
+        private object locker = new object();
+        private Queue<T> queueTasks = new Queue<T>(); 
+        private bool isStopped = false;
+        
         public bool IsEmpty
         {
-            get { return queue.Count == 0; }
+            get { return queueTasks.Count == 0; }
         }
 
         /// <summary>
         /// Добавление задачи в очередь 
         /// </summary>
-        /// <param name="task"></param>
         public void Enqueue(T task)
         {
             if (task == null)
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException("Задача для добавления в очередь пуста");
             lock (locker)
             {
                 if (isStopped)
                 {
-                    throw new InvalidOperationException("Очередь уже остановлена");
+                    throw new InvalidOperationException("Очередь задач уже остановлена. В нее больше нельзя добавлять задачи.");
                 }
-                queue.Enqueue(task);
+                queueTasks.Enqueue(task);
                 Monitor.Pulse(locker);
             }
         }
@@ -37,23 +36,22 @@ namespace TestVeeamGZipStream.Concurrency
         /// <summary>
         /// Извлечение задачи из очереди 
         /// </summary>
-        /// <returns></returns>
         public T Dequeue()
         {
             lock (locker)
             {
-                while (queue.Count == 0 && !isStopped)
+                while (queueTasks.Count == 0 && !isStopped)
                 {
                     Monitor.Wait(locker);
                 }
-                if (queue.Count == 0)
+                if (queueTasks.Count == 0)
                 {
                     return null;
                 }
-                return queue.Dequeue();
+                return queueTasks.Dequeue();
             }
         }
-
+        
         public void Stop()
         {
             lock (locker)

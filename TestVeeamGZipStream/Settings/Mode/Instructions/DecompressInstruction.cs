@@ -8,10 +8,31 @@ namespace TestVeeamGZipStream.Settings.Mode.Instructions
 {
     public class DecompressInstruction : IGZipInstruction
     {
-        public Block Apply(Block block)
+        public void Processing(UserThreadPool pool, FileReaderWriter readerWriter)
+        {
+            readerWriter.ReadInfoBlocksAtTheEndFile();
+            ///Составление задач
+            foreach (var block in readerWriter.SizeCompressedBlockList)
+            {
+                BlockMetadata metadata = new BlockMetadata(block);
+                Task task = new Task(metadata,
+                                    (blockData) => Decompress(blockData),
+                                    readerWriter);
+                pool.Execute(task);
+            }
+        }
+        
+        public void PostProcessing(FileReaderWriter readerWriter) { }
+
+        /// <summary>
+        /// Применение инструкции декомпрессии
+        /// </summary>
+        /// <param name="block"></param>
+        /// <returns></returns>
+        private Block Decompress(Block block)
         {
             // Размер жестко фиксируется потому', что декомпрессия производится из меньшего размера в больший 
-            // тот, который был до компрессии
+            // тот, который был до компрессии (CompressInstruction.BLOCK_SIZE)
 
             using (MemoryStream compressedFileStream = new MemoryStream(CompressInstruction.BLOCK_SIZE))
             {
@@ -29,29 +50,6 @@ namespace TestVeeamGZipStream.Settings.Mode.Instructions
                 }
             }
             return block;
-        }
-
-
-        public void Processing(UserThreadPool pool, FileReaderWriter readerWriter)
-        {
-            readerWriter.ReadInfoBlocksAtTheEndFile();
-            ///Составление задач
-            foreach (var block in readerWriter.SizeCompressedBlockList)
-            {
-                BlockMetadata metadata = new BlockMetadata(block);
-                Task task = new Task(metadata,
-                                    (blockData) => Apply(blockData),
-                                    readerWriter);
-                pool.Execute(task);
-            }
-        }
-
-
-        public void PostProcessing(FileReaderWriter readerWriter)
-        {
-            // Здесь может быть дописана реализация после окончания декомпрессии
-            
-            // Но это не точно..
         }
     }
 }

@@ -14,13 +14,7 @@ namespace TestVeeamGZipStream.IO
         private readonly FileStream writer;
         public static object lockReader = new object();
         public static object lockWriter = new object();
-        /// <summary>
-        /// Номер блока, который должен быть считан (для правильной очередности из компрессированного файла)
-        /// </summary>
         private static int numberBlockReader = 0;
-        /// <summary>
-        /// Номер блока, который должен быть записан (для правильной очередности)
-        /// </summary>
         private static int numberBlockWriter = 0;
 
         private readonly List<int> sizeCompressedBlockList = new List<int>();
@@ -36,6 +30,10 @@ namespace TestVeeamGZipStream.IO
         /// </summary>
         public IEnumerable<int> SizeCompressedBlockList { get { return sizeCompressedBlockList; } }
 
+        /// <summary>
+        /// Получить число блоков в файле.
+        /// </summary>
+        /// <param name="blockSize">Размер блока, по которому надо узнать количество помещающихся в файл блоков</param>
         public int GetNumberOfBlocks(int blockSize)
         {
             try
@@ -44,7 +42,7 @@ namespace TestVeeamGZipStream.IO
             }
             catch (IOException e)
             {
-                throw new IOException("Не удалось прочитать файл");
+                throw new IOException("Не удалось прочитать файл:\n" + e.Message);
             }
         }
 
@@ -58,16 +56,18 @@ namespace TestVeeamGZipStream.IO
                 int bytesRead;
                 while (numberBlockReader != metadata.Number)
                 {
-                    // не знаю норм ли подход, но пока так. И даже не так. Долгим тестированием выяснено, что засыпание не ускоряет процесс поиска, 
-                    // так как операции чтения-записи небольших блоков работы 4х-8 потоков выполняются достаточно быстро и цикл работает не столь долго
+                    // Начинаем читать только в упорядоченном направлении.
+                    // Долгим тестированием выяснено, что засыпание (Thread.Sleep() не ускоряет процесс поиска, 
+                    // так как операции чтения-записи на установленных нами размерах (1 МБайт) блоков 
+                    // работы 2х-8 потоков выполняются достаточно быстро и цикл работает не столь долго
                 }
                 lock (lockReader)
                 {
                     bytesRead = reader.Read(data, 0, metadata.Size);
                     numberBlockReader++;
-                    //metadata.Number = numberBlockReader++;
                 }
-                ///Делается один раз с самым последним блоком. И то при сжатии, потому что он не содержит столько байт сколько мы указываем
+                
+                /// Делается один раз с самым последним блоком. И то при сжатии, потому что он может не содержать столько байт сколько мы указываем
                 if (bytesRead < metadata.Size)
                 {
                     metadata.Size = bytesRead;
@@ -80,18 +80,21 @@ namespace TestVeeamGZipStream.IO
             }
             catch (IOException e)
             {
-                throw new IOException("Не удалось прочитать файл");
+                throw new IOException("Не удалось прочитать блок данных с номером {0} из файла", metadata.Number);
             }
         }
-        
+
         /// <summary>
-        /// Чтение информации о сжатых блоках с конца файла после компрессии.
+        /// Чтение информации о сжатых блоках с конца файла, записанных после компрессии.
         /// </summary>
+        /// <!--
+        /// Дополнительно: 
+        /// Данные читаются с конца файла. Последним идет количество сжатых блоков. 
+        /// Далее сдвигаемся с конца на (количество блоков * размер записываемых данных (4 байта))
+        /// Это нужно для верной последовательности. Считываем размер каждого блока и заносим в массив.
+        /// -->
         public void ReadInfoBlocksAtTheEndFile()
         {
-            // Данные читаются с конца файла. Последним идет количество блоков. 
-            // Далее сдвигаемся с конца на (количество блоков * размер записываемых данных (4 байта))
-            // Это нужно для верной последовательности. Считываем размер каждого блока и заносим в массив.
             int blockCount;
             ///Чтение с конца файла информации о сжатии
             using (MemoryStream compressInfoStream = new MemoryStream())
@@ -101,10 +104,10 @@ namespace TestVeeamGZipStream.IO
                 byte[] countBlocks = new byte[SizeOfWriteInfoBlock];
                 reader.Read(countBlocks, 0, SizeOfWriteInfoBlock);
                 blockCount = BitConverter.ToInt32(countBlocks, 0);
-                //сдвигаем позицию к началу списка размеров блоков
+                // Сдвигаем позицию к началу списка размеров блоков
                 offset += SizeOfWriteInfoBlock * blockCount;
                 reader.Position = reader.Length - offset;
-                //Проходим каждые 4 байта (размер инта) и считываем значение блока в список
+                // Проходим каждые 4 байта (размер инта) и считываем значение блока в список
                 for (int i = 0; i < blockCount; i++)
                 {
                     byte[] sizeBlock = new byte[SizeOfWriteInfoBlock];
@@ -126,8 +129,9 @@ namespace TestVeeamGZipStream.IO
             {
                 while (numberBlockWriter != block.Number)
                 {
-                    // не знаю норм ли подход, но пока так. И даже не так. Долгим тестированием выяснено, что засыпание не ускоряет процесс поиска, 
-                    // так как операции чтения-записи небольших блоков работы 4х-8 потоков выполняются достаточно быстро и цикл работает не столь долго
+                    // Долгим тестированием выяснено, что засыпание (Thread.Sleep() не ускоряет процесс поиска, 
+                    // так как операции чтения-записи на установленных нами размерах (1 МБайт) блоков 
+                    // работы 2х-8 потоков выполняются достаточно быстро и цикл работает не столь долго
                 }
                 lock (writer)
                 {
@@ -138,16 +142,18 @@ namespace TestVeeamGZipStream.IO
             }
             catch (IOException e)
             {
-                throw new IOException("Не удалось записать файл");
+                throw new IOException("Не удалось записать блок данных с номером {0} в  файл по причине", block.Number);
             }
         }
 
 
         /// <summary>
         /// Запись информации о сжатых блоках в конец файла после компрессии.
+        /// </summary>
+        /// <!--
         /// После последнего сомпрессированного блока записываются размеры всех блоков
         /// в порядке записи, последним в файл заносится число сжатых блоков.
-        /// </summary>
+        /// -->
         public void WriteInfoBlocksAtTheEndFile()
         {
             using (MemoryStream compressInfoStream = new MemoryStream())

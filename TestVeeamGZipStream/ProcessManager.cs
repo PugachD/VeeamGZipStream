@@ -11,7 +11,8 @@ namespace TestVeeamGZipStream
     {
         #region Fields
 
-        //Выбираем (выбрал я долгим и нудным тестированием на больших и не очень файлах) число потоков равное числу процессоров
+        // Выбираем число потоков равное числу процессоров
+        // Выбрал я долгим и нудным тестированием на больших и не очень файлах (до 12 Гигабайт) 
         private readonly int threadCount = Environment.ProcessorCount;
 
         private readonly ReaderWriterFactory readerWriterFactory;
@@ -29,9 +30,8 @@ namespace TestVeeamGZipStream
 
         #endregion .ctor
 
-        public void Run(CompressionParams settings)
+        public void RunProcessManager(CompressionParams settings)
         {
-            //Открываем поток чтения файла
             using (var reader = new FileStream(settings.SourceFile,
             FileMode.Open,
             FileAccess.Read,
@@ -39,7 +39,6 @@ namespace TestVeeamGZipStream
             settings.BlockSize,
             FileOptions.Asynchronous))
             {
-                //Открываем поток записи файла
                 using (var writer = new FileStream(settings.RecoverFileName,
                     FileMode.OpenOrCreate,
                     FileAccess.Write,

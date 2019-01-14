@@ -6,11 +6,6 @@ namespace TestVeeamGZipStream.Concurrency
     public class UserThreadPool
     {
         private readonly AutoResetEvent queueUpdate = new AutoResetEvent(false);
-        /// <summary>
-        /// Событие синхронизации основного потока
-        /// </summary>
-        private readonly ManualResetEvent isEnd = new ManualResetEvent(false);
-        private object queueLocker = new object();
 
         private static long tasksInProgress = 0;
 
@@ -26,7 +21,7 @@ namespace TestVeeamGZipStream.Concurrency
 
             for (int i = 0; i < nThreads; i++)
             {
-                threads[i] = new Thread(Run);
+                threads[i] = new Thread(DistributeTasks);
                 threads[i].Start();
             }
         }
@@ -38,15 +33,17 @@ namespace TestVeeamGZipStream.Concurrency
         }
         
         /// <summary>
-        /// Метод-"колесо" для просмотра задач в очереди
+        /// Метод - "колесо" для просмотра задач в очереди.
+        /// И распределения полученных задач потокам.
         /// </summary>
-        private void Run()
+        private void DistributeTasks()
         {
             Concurrency.Task task;
 
             while (true)
             {
-                lock(queueUpdate) {
+                lock(queueUpdate)
+                {
                     while (queue.IsEmpty)
                     {
                         try
@@ -55,7 +52,7 @@ namespace TestVeeamGZipStream.Concurrency
                         }
                         catch (ThreadInterruptedException e)
                         {
-                            Console.WriteLine("Произошла ошибка во время ожидания очереди: " + e.Message);
+                            throw new ThreadInterruptedException("Произошла ошибка во время ожидания очереди: " + e.Message);
                         }
                     }
                     Interlocked.Increment(ref tasksInProgress);
@@ -64,12 +61,12 @@ namespace TestVeeamGZipStream.Concurrency
 
                 try
                 {
-                    task.Run();
+                    task.StartOperationOnBlock();
                     Interlocked.Decrement(ref tasksInProgress);
                 }
                 catch (SystemException e)
                 {
-                    Console.WriteLine("Пул потоков прервал работу из-за: " + e.Message);
+                    throw new SystemException("Пул потоков прервал работу из-за: " + e.Message);
                 }
             }
         }

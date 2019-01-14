@@ -18,7 +18,10 @@ namespace TestVeeamGZipStream.Concurrency
             this.readerWriter = readerWriter;
         }
 
-        public void Run()
+        /// <summary>
+        /// Запускает задачу чтения из потока, операции (де)компрессии и записи в поток
+        /// </summary>
+        public void StartOperationOnBlock()
         {
             try
             {
@@ -27,6 +30,10 @@ namespace TestVeeamGZipStream.Concurrency
                 readerWriter.WriteBlock(updatedBlock);
             }
             catch (ThreadInterruptedException ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+            catch(Exception ex)
             {
                 throw new SystemException(ex.Message);
             }
