@@ -9,10 +9,10 @@ namespace TestVeeamGZipStream.Settings
     public class CompressionParams
     {
         #region Fieds
+        
+        private const int blockSize = 4 * 1024 * 1024; 
 
         private readonly Mode.Mode mode;
-        private readonly int blockSize;
-        //private readonly int procCount;
         private readonly string sourceFile;
         private readonly string recoverFileName;
 
@@ -20,43 +20,48 @@ namespace TestVeeamGZipStream.Settings
 
         #region .ctor
 
-        public CompressionParams(Mode.Mode mode, string sourceFile, string recoverFileName, int blockSize)
+        public CompressionParams(Mode.Mode mode, string sourceFile, string recoverFileName)
         {
             this.mode = mode;
             this.recoverFileName = recoverFileName;
             this.sourceFile = sourceFile;
-            this.blockSize = blockSize;
-            //procCount = 1;// Environment.ProcessorCount;
         }
 
         #endregion .ctor
 
         #region Properties
 
+        /// <summary>
+        /// Способ сжатия
+        /// </summary>
         public Mode.Mode Mode
         {
             get { return mode; }
         }
 
+        /// <summary>
+        /// Размер блока для FileStream (потока чтения и записи)
+        /// </summary>
         public int BlockSize
         {
             get { return blockSize; }
         }
 
+        /// <summary>
+        /// Полное имя исходного файла
+        /// </summary>
         public string SourceFile
         {
             get { return sourceFile; }
         }
 
+        /// <summary>
+        /// Полное имя выходного файла
+        /// </summary>
         public string RecoverFileName
         {
             get { return recoverFileName; }
         }
-
-        //public int ProcCount
-        //{
-        //    get { return procCount; }
-        //}
 
         #endregion
     }

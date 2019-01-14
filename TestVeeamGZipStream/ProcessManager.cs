@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using TestVeeamGZipStream.Concurrency;
 using TestVeeamGZipStream.IO;
-using TestVeeamGZipStream.Models;
 using TestVeeamGZipStream.Settings;
-using TestVeeamGZipStream.Settings.Mode;
 
 namespace TestVeeamGZipStream
 {
@@ -19,23 +14,24 @@ namespace TestVeeamGZipStream
         //Выбираем (выбрал я долгим и нудным тестированием на больших и не очень файлах) число потоков равное числу процессоров
         private readonly int threadCount = Environment.ProcessorCount;
 
-        private UserThreadPool pool;
-        private ReaderWriterFactory readerWriterFactory;
+        private readonly ReaderWriterFactory readerWriterFactory;
+        private readonly UserThreadPool pool;
 
         #endregion Fields
 
         #region .ctor
 
-        public ProcessManager(ReaderWriterFactory readerWriterFactory)
+        public ProcessManager()
         {
-            this.readerWriterFactory = readerWriterFactory;
-            this.pool = new UserThreadPool(threadCount);
+            readerWriterFactory = new ReaderWriterFactory();
+            pool = new UserThreadPool(threadCount);
         }
 
         #endregion .ctor
 
         public void Run(CompressionParams settings)
         {
+            //Открываем поток чтения файла
             using (var reader = new FileStream(settings.SourceFile,
             FileMode.Open,
             FileAccess.Read,
@@ -43,6 +39,7 @@ namespace TestVeeamGZipStream
             settings.BlockSize,
             FileOptions.Asynchronous))
             {
+                //Открываем поток записи файла
                 using (var writer = new FileStream(settings.RecoverFileName,
                     FileMode.OpenOrCreate,
                     FileAccess.Write,

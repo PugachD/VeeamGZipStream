@@ -65,13 +65,12 @@ namespace TestVeeamGZipStream.Settings.Mode
             }
             catch(ArgumentNullException argEx)
             {
-                Console.WriteLine("Значение параметра операции задано неверно");
-                throw argEx;
+                throw new ArgumentNullException("Значение параметра операции (compress/decompress) задано неверно.\n" + argEx.Message);
             }
             catch (InvalidOperationException invalidEx)
             {
-                Console.WriteLine("Ни один элемент не удовлетворяет условию предиката");
-                throw invalidEx;
+                throw new InvalidOperationException("Ни один элемент не удовлетворяет условию предиката поиска операции (compress/decompress). \n" + 
+                    invalidEx.Message);
             }
         }
     }

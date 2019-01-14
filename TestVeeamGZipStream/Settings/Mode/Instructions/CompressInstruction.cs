@@ -1,5 +1,4 @@
-﻿using System;
-using TestVeeamGZipStream.Models;
+﻿using TestVeeamGZipStream.Models;
 using System.IO.Compression;
 using System.IO;
 using TestVeeamGZipStream.Concurrency;

@@ -18,7 +18,7 @@ namespace TestVeeamGZipStream.Settings.Mode.Instructions
         /// <summary>
         /// Процесс компрессии/декомпрессии.
         /// В него входит чтение предварительных данных для записи 
-        /// (информация о блоках, если файла был уже нами сжат)
+        /// (информация о блоках, если файл был уже нами сжат)
         /// </summary>
         /// <param name="pool">Пул потоков</param>
         /// <param name="fileReaderWriter">Объект записи-чтения файлов</param>

@@ -50,6 +50,7 @@
     <Compile Include="IO\ReaderWriterFactory.cs" />
     <Compile Include="Models\Block.cs" />
     <Compile Include="Models\BlockMetadata.cs" />
+    <Compile Include="ParamsReader.cs" />
     <Compile Include="ProcessManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

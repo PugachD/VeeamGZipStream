@@ -14,6 +14,9 @@ namespace TestVeeamGZipStream.IO
         private readonly FileStream writer;
         public static object lockReader = new object();
         public static object lockWriter = new object();
+        /// <summary>
+        /// Номер блока, который должен быть считан (для правильной очередности из компрессированного файла)
+        /// </summary>
         private static int numberBlockReader = 0;
         /// <summary>
         /// Номер блока, который должен быть записан (для правильной очередности)

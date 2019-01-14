@@ -2,7 +2,6 @@
 using System.Threading;
 using TestVeeamGZipStream.IO;
 using TestVeeamGZipStream.Models;
-using TestVeeamGZipStream.Settings.Mode.Instructions;
 
 namespace TestVeeamGZipStream.Concurrency
 {
@@ -24,7 +23,7 @@ namespace TestVeeamGZipStream.Concurrency
             try
             {
                 Block readBlock = readerWriter.ReadBlock(metadata);
-                Block updatedBlock = applyInstructions(readBlock);//(); instruction.Apply(readBlock);
+                Block updatedBlock = applyInstructions(readBlock);
                 readerWriter.WriteBlock(updatedBlock);
             }
             catch (ThreadInterruptedException ex)
