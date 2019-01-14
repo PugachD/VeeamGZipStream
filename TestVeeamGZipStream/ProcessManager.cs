@@ -16,7 +16,6 @@ namespace TestVeeamGZipStream
     {
         #region Fields
 
-        private const int BLOCK_SIZE = 1024 * 1024;
         //Выбираем (выбрал я долгим и нудным тестированием на больших и не очень файлах) число потоков равное числу процессоров
         private readonly int threadCount = Environment.ProcessorCount;
 
@@ -51,52 +50,9 @@ namespace TestVeeamGZipStream
                     settings.BlockSize,
                     FileOptions.Asynchronous))
                 {
-
-                    FileReaderWriter readerWriter = readerWriterFactory.GetFileReaderWriter(reader, writer);
-                    int blockCount;
-                    ///Чтение с конца файла информации о сжатии
-                    if (settings.Mode == Mode.DECOMPRESS)
-                    {
-                        using (MemoryStream compressInfoStream = new MemoryStream())
-                        {
-                            int offset = sizeof(int);
-                            reader.Position = reader.Length - offset;
-                            byte[] countBlocks = new byte[sizeof(int)];
-                            reader.Read(countBlocks, 0, sizeof(int));
-                            blockCount = BitConverter.ToInt32(countBlocks, 0);
-                            //сдвигаем позицию к началу списка размеров блоков
-                            offset += sizeof(int) * blockCount;
-                            reader.Position = reader.Length - offset;
-                            //Проходим каждые 4 байта (размер инта) и считываем значение блока в список
-                            for (int i = 0; i < blockCount; i++)
-                            {
-                                byte[] sizeBlock = new byte[sizeof(int)];
-                                reader.Read(sizeBlock, 0, sizeof(int));
-                                readerWriter.SizeCompressedBlockList.Add(BitConverter.ToInt32(sizeBlock, 0));
-                            }
-
-                            reader.Position = 0;
-                        }
-                        ///Составление задач
-                        foreach (var block in readerWriter.SizeCompressedBlockList)
-                        {
-                            BlockMetadata metadata = new BlockMetadata(block);
-                            Task task = new Task(metadata, settings.Mode.Instruction, readerWriter);
-                            pool.Execute(task);
-                        }
-                    }
-                    else
-                    {
-                        blockCount = readerWriter.GetNumberOfBlocks(BLOCK_SIZE);
-                        ///
-                        for (int i = 0; i < blockCount; i++)
-                        {
-                            BlockMetadata metadata = new BlockMetadata(BLOCK_SIZE);
-                            Task task = new Task(metadata, settings.Mode.Instruction, readerWriter);
-                            pool.Execute(task);
-                        }
-                    }
-
+                    var readerWriter = readerWriterFactory.GetFileReaderWriter(reader, writer);
+                    settings.Mode.Instruction.Processing(pool, readerWriter);
+                    
                     long res = 0, old = 0;
                     while (!pool.IsFinished())
                     {
@@ -104,20 +60,9 @@ namespace TestVeeamGZipStream
                         if (old < (res = (100 * reader.Position) / reader.Length))
                                 Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Прогресс: " + (old = res) + "%");
                     }
-                    ///Запись в конец файла информации о сжатии
-                    if (settings.Mode == Mode.COMPRESS)
-                    {
-                        using (MemoryStream compressInfoStream = new MemoryStream())
-                        {
-                            foreach (var item in readerWriter.SizeCompressedBlockList)
-                            {
-                                compressInfoStream.Write(BitConverter.GetBytes(item), 0, sizeof(int));
-                            }
-                            compressInfoStream.Write(BitConverter.GetBytes(FileReaderWriter.NumberBlockWriter), 0, sizeof(int));
-                            writer.Write(compressInfoStream.ToArray(), 0, (int)compressInfoStream.Length);
-                        }
-                    }
-                    ///
+
+                    settings.Mode.Instruction.PostProcessing(readerWriter);
+
                     pool.Stop();
                 }
             }

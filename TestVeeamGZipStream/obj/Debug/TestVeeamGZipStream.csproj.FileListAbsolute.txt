@@ -12,3 +12,10 @@ E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZip
 E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.csproj.CoreCompileInputs.cache
 E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.exe
 E:\Дима\Programer\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.pdb
+D:\мое\Разработка\Тестовые Задания\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.csproj.CoreCompileInputs.cache
+D:\мое\Разработка\Тестовые Задания\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.exe
+D:\мое\Разработка\Тестовые Задания\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.pdb
+D:\мое\Разработка\Тестовые Задания\TestGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.exe.config
+D:\мое\Разработка\Тестовые Задания\TestGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.exe
+D:\мое\Разработка\Тестовые Задания\TestGZipStream\TestVeeamGZipStream\bin\Debug\TestVeeamGZipStream.pdb
+D:\мое\Разработка\Тестовые Задания\TestGZipStream\TestVeeamGZipStream\obj\Debug\TestVeeamGZipStream.csprojResolveAssemblyReference.cache

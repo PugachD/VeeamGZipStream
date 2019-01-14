@@ -9,13 +9,13 @@ namespace TestVeeamGZipStream.Concurrency
     public class Task
     {
         private BlockMetadata metadata;
-        private IGZipInstruction instruction;
+        private Func<Block, Block> applyInstructions;
         private FileReaderWriter readerWriter;
 
-        public Task(BlockMetadata metadata, IGZipInstruction instruction, FileReaderWriter readerWriter)
+        public Task(BlockMetadata metadata, Func<Block, Block> applyInstructions, FileReaderWriter readerWriter)
         {
             this.metadata = metadata;
-            this.instruction = instruction;
+            this.applyInstructions = applyInstructions;
             this.readerWriter = readerWriter;
         }
 
@@ -24,7 +24,7 @@ namespace TestVeeamGZipStream.Concurrency
             try
             {
                 Block readBlock = readerWriter.ReadBlock(metadata);
-                Block updatedBlock = instruction.Apply(readBlock);
+                Block updatedBlock = applyInstructions(readBlock);//(); instruction.Apply(readBlock);
                 readerWriter.WriteBlock(updatedBlock);
             }
             catch (ThreadInterruptedException ex)
