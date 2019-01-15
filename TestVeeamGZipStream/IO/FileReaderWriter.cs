@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using TestVeeamGZipStream.Models;
 
 namespace TestVeeamGZipStream.IO
@@ -66,7 +67,7 @@ namespace TestVeeamGZipStream.IO
                     bytesRead = reader.Read(data, 0, metadata.Size);
                     numberBlockReader++;
                 }
-                
+
                 /// Делается один раз с самым последним блоком. И то при сжатии, потому что он может не содержать столько байт сколько мы указываем
                 if (bytesRead < metadata.Size)
                 {

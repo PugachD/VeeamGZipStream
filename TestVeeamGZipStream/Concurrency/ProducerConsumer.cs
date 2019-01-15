@@ -16,7 +16,7 @@ namespace TestVeeamGZipStream.Concurrency
         }
 
         /// <summary>
-        /// Добавление задачи в очередь 
+        /// Добавление в очередь 
         /// </summary>
         public void Enqueue(T task)
         {
@@ -34,7 +34,7 @@ namespace TestVeeamGZipStream.Concurrency
         }
 
         /// <summary>
-        /// Извлечение задачи из очереди 
+        /// Извлечение из очереди 
         /// </summary>
         public T Dequeue()
         {

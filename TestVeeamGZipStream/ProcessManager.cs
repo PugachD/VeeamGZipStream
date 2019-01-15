@@ -30,6 +30,11 @@ namespace TestVeeamGZipStream
 
         #endregion .ctor
 
+        public UserThreadPool Pool
+        {
+            get { return pool; }
+        }
+
         public void RunProcessManager(CompressionParams settings)
         {
             using (var reader = new FileStream(settings.SourceFile,
@@ -47,12 +52,17 @@ namespace TestVeeamGZipStream
                     FileOptions.Asynchronous))
                 {
                     var readerWriter = readerWriterFactory.GetFileReaderWriter(reader, writer);
+                    pool.StartThreadPool();
                     settings.Mode.Instruction.Processing(pool, readerWriter);
                     
                     long res = 0, old = 0;
                     while (!pool.IsFinished())
                     {
                         Thread.Sleep(100);
+                        if (!pool.QueueExceptionIsEmpty())
+                        {
+                            throw pool.GetThreadsException();
+                        }
                         if (old < (res = (100 * reader.Position) / reader.Length))
                                 Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Прогресс: " + (old = res) + "%");
                     }

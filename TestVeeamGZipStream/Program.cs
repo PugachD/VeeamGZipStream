@@ -6,11 +6,10 @@ namespace TestVeeamGZipStream
     {
         static void Main(string[] args)
         {
+            ParamsReader paramsReader = new ParamsReader();
+            ProcessManager manager = new ProcessManager();
             try
             {
-                ParamsReader paramsReader = new ParamsReader();
-                ProcessManager manager = new ProcessManager();
-
                 var settings = paramsReader.Read(args);
 
                 Console.WriteLine("Входные данные разобраны. Алгоритм начал работу ...\n");
@@ -19,6 +18,7 @@ namespace TestVeeamGZipStream
             }
             catch(Exception ex)
             {
+                manager.Pool.Stop();
                 Console.WriteLine("Алгоритм прервал работу по причине:\n{0}", ex.Message);
             }
             finally
