@@ -10,6 +10,8 @@ namespace TestVeeamGZipStream.IO
     public class FileReaderWriter
     {
         private const int SizeOfWriteInfoBlock = 4;
+        private const string stringUserID = "Dmitriy";
+        private readonly byte[] bytesUserID = Encoding.Unicode.GetBytes(stringUserID);
 
         private readonly FileStream reader;
         private readonly FileStream writer;
@@ -100,7 +102,15 @@ namespace TestVeeamGZipStream.IO
             ///Чтение с конца файла информации о сжатии
             using (MemoryStream compressInfoStream = new MemoryStream())
             {
-                int offset = SizeOfWriteInfoBlock;
+                /// Проверка на маркер в файле
+                int offset = bytesUserID.Length;
+                reader.Position = reader.Length - offset;
+                byte[] userIDInFile = new byte[bytesUserID.Length];
+                reader.Read(userIDInFile, 0, bytesUserID.Length);
+                СompressionFileWasCompressed(userIDInFile);
+                /// Окончена проверка на маркер в файле
+                
+                offset += SizeOfWriteInfoBlock;
                 reader.Position = reader.Length - offset;
                 byte[] countBlocks = new byte[SizeOfWriteInfoBlock];
                 reader.Read(countBlocks, 0, SizeOfWriteInfoBlock);
@@ -117,6 +127,16 @@ namespace TestVeeamGZipStream.IO
                 }
 
                 reader.Position = 0;
+            }
+        }
+
+        private void СompressionFileWasCompressed(byte[] bytes)
+        {
+            string readString = Encoding.Unicode.GetString(bytes);
+            if (readString != stringUserID)
+            {
+                throw new InvalidDataException(String.Format("Выбрнайл для декомпрессии файл был сформирован не нами." +
+                                            "\nНе найдено ключевое слово {0} в потайном месте :).", stringUserID));
             }
         }
 
@@ -164,6 +184,7 @@ namespace TestVeeamGZipStream.IO
                     compressInfoStream.Write(BitConverter.GetBytes(item), 0, SizeOfWriteInfoBlock);
                 }
                 compressInfoStream.Write(BitConverter.GetBytes(numberBlockWriter), 0, SizeOfWriteInfoBlock);
+                compressInfoStream.Write(bytesUserID, 0, bytesUserID.Length);
                 writer.Write(compressInfoStream.ToArray(), 0, (int)compressInfoStream.Length);
             }
         }
