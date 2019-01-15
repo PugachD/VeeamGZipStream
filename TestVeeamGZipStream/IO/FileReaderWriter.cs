@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TestVeeamGZipStream.Models;
+using VeeamGZipStream.Models;
 
-namespace TestVeeamGZipStream.IO
+namespace VeeamGZipStream.IO
 {
     public class FileReaderWriter
     {

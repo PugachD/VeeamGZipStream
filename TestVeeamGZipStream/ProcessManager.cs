@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using TestVeeamGZipStream.Concurrency;
-using TestVeeamGZipStream.IO;
-using TestVeeamGZipStream.Settings;
+using VeeamGZipStream.Concurrency;
+using VeeamGZipStream.IO;
+using VeeamGZipStream.Settings;
 
-namespace TestVeeamGZipStream
+namespace VeeamGZipStream
 {
     public class ProcessManager
     {

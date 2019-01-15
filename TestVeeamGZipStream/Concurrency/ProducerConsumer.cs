@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace TestVeeamGZipStream.Concurrency
+namespace VeeamGZipStream.Concurrency
 {
     public class ProducerConsumer<T> where T : class
     {

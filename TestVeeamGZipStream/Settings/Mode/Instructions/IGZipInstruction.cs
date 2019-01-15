@@ -1,8 +1,8 @@
-﻿using TestVeeamGZipStream.Concurrency;
-using TestVeeamGZipStream.IO;
-using TestVeeamGZipStream.Models;
+﻿using VeeamGZipStream.Concurrency;
+using VeeamGZipStream.IO;
+using VeeamGZipStream.Models;
 
-namespace TestVeeamGZipStream.Settings.Mode.Instructions
+namespace VeeamGZipStream.Settings.Mode.Instructions
 {
     public interface IGZipInstruction
     {

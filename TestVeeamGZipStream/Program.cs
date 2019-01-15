@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TestVeeamGZipStream
+namespace VeeamGZipStream
 {
     class Program
     {

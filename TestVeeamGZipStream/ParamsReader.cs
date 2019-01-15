@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using TestVeeamGZipStream.Settings;
-using TestVeeamGZipStream.Settings.Mode;
+using VeeamGZipStream.Settings;
+using VeeamGZipStream.Settings.Mode;
 
-namespace TestVeeamGZipStream
+namespace VeeamGZipStream
 {
     public class ParamsReader
     {
