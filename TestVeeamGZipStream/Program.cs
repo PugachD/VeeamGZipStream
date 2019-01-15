@@ -6,7 +6,7 @@ namespace VeeamGZipStream
     {
         static void Main(string[] args)
         {
-            ParamsReader paramsReader = new ParamsReader();
+            ValidationParams paramsReader = new ValidationParams();
             ProcessManager manager = new ProcessManager();
             try
             {
