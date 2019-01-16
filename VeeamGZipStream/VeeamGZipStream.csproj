@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8DED7B5B-9AD4-4968-B157-BF63F2FB5B20}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TestVeeamGZipStream</RootNamespace>
-    <AssemblyName>TestVeeamGZipStream</AssemblyName>
+    <RootNamespace>VeeamGZipStream</RootNamespace>
+    <AssemblyName>VeeamGZipStream</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
