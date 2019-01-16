@@ -56,6 +56,10 @@ namespace VeeamGZipStream.Concurrency
         {
             lock (locker)
             {
+                if (isStopped)
+                {
+                    return;
+                }
                 isStopped = true;
                 Monitor.PulseAll(locker);
             }

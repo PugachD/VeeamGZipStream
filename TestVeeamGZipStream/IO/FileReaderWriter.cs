@@ -161,7 +161,7 @@ namespace VeeamGZipStream.IO
                     sizeCompressedBlockList.Add(block.Data.Length);
                 }
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 throw new IOException("Не удалось записать блок данных с номером {0} в  файл по причине", block.Number);
             }
