@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TestVeeamGZipStream.Models;
+using VeeamGZipStream.Models;
 
-namespace TestVeeamGZipStream.IO
+namespace VeeamGZipStream.IO
 {
     public class FileReaderWriter
     {
@@ -161,7 +161,7 @@ namespace TestVeeamGZipStream.IO
                     sizeCompressedBlockList.Add(block.Data.Length);
                 }
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 throw new IOException("Не удалось записать блок данных с номером {0} в  файл по причине", block.Number);
             }

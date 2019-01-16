@@ -1,14 +1,18 @@
 ﻿using System;
 using System.IO;
-using TestVeeamGZipStream.Settings;
-using TestVeeamGZipStream.Settings.Mode;
+using VeeamGZipStream.Settings;
+using VeeamGZipStream.Settings.Mode;
 
-namespace TestVeeamGZipStream
+namespace VeeamGZipStream
 {
-    public class ParamsReader
+    public class ValidationParams
     {
         public CompressionParams Read(string[] args)
         {
+            if (args == null)
+            {
+                throw new NullReferenceException("Число параметров не соответствует ТЗ");
+            }
             if (args.Length != 3)
             {
                 throw new ArgumentOutOfRangeException("Число параметров не соответствует ТЗ");
@@ -41,16 +45,16 @@ namespace TestVeeamGZipStream
         {
             recoverFileName = (recoverFileName ?? string.Empty).Trim();
             if (string.IsNullOrEmpty(recoverFileName))
-                throw new FileNotFoundException("Путь результирующего фаила не задан");
+                throw new FileNotFoundException("Путь результирующего файла не задан");
             
             var dir = Path.GetDirectoryName(recoverFileName);
             if (!Directory.Exists(dir))
-                throw new Exception("Директория результирующего файла не найдена " + dir);
+                throw new DirectoryNotFoundException("Директория результирующего файла не найдена " + dir);
 
             bool extension = Path.HasExtension(recoverFileName);
             if (!extension)
             {
-                throw new Exception("Расширение результирующего файла не найдено " + extension);
+                throw new FormatException("Расширение результирующего файла не найдено " + extension);
             }
             // Проверка на наличие самого файла не нужна. 
             // Файл создается или перезаписывается во время открытия пакета FileStream

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace TestVeeamGZipStream.Concurrency
+namespace VeeamGZipStream.Concurrency
 {
     public class UserThreadPool
     {

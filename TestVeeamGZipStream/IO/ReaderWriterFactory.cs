@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace TestVeeamGZipStream.IO
+namespace VeeamGZipStream.IO
 {
     public sealed class ReaderWriterFactory
     {

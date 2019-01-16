@@ -1,5 +1,5 @@
 ﻿
-namespace TestVeeamGZipStream.Models
+namespace VeeamGZipStream.Models
 {
     public class BlockMetadata
     {

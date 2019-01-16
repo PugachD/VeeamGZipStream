@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace TestVeeamGZipStream
+namespace VeeamGZipStream
 {
     class Program
     {
         static void Main(string[] args)
         {
-            ParamsReader paramsReader = new ParamsReader();
+            ValidationParams paramsReader = new ValidationParams();
             ProcessManager manager = new ProcessManager();
             try
             {

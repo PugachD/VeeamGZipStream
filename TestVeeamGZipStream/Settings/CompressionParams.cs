@@ -1,5 +1,5 @@
 ﻿
-namespace TestVeeamGZipStream.Settings
+namespace VeeamGZipStream.Settings
 {
     public class CompressionParams
     {

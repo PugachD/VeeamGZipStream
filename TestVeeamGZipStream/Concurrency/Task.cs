@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using TestVeeamGZipStream.IO;
-using TestVeeamGZipStream.Models;
+using VeeamGZipStream.IO;
+using VeeamGZipStream.Models;
 
-namespace TestVeeamGZipStream.Concurrency
+namespace VeeamGZipStream.Concurrency
 {
     public class Task
     {

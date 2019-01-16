@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TestVeeamGZipStream.Settings.Mode.Instructions;
+using VeeamGZipStream.Settings.Mode.Instructions;
 
-namespace TestVeeamGZipStream.Settings.Mode
+namespace VeeamGZipStream.Settings.Mode
 {
     public class Mode
     {
