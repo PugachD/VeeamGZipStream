@@ -1,92 +1,141 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
-namespace TestVeeamGZipStream.Concurrency
+namespace VeeamGZipStream.Concurrency
 {
     public class UserThreadPool
     {
-        private readonly AutoResetEvent queueUpdate = new AutoResetEvent(false);
-        /// <summary>
-        /// Событие синхронизации основного потока
-        /// </summary>
-        private readonly ManualResetEvent isEnd = new ManualResetEvent(false);
-        private object queueLocker = new object();
+        private readonly AutoResetEvent queueTasksUpdate = new AutoResetEvent(false);
+        private readonly ProducerConsumer<Concurrency.Task> queueTasks;
+        private readonly ProducerConsumer<Exception> queueExceptions;
 
         private static long tasksInProgress = 0;
 
         private int nThreads;
         private Thread[] threads;
-        private ProducerConsumer<Concurrency.Task> queue;
+
+        private bool poolIsStarted = false;
 
         public UserThreadPool(int nThreads)
         {
             this.nThreads = nThreads;
-            queue = new ProducerConsumer<Concurrency.Task>();
+            queueTasks = new ProducerConsumer<Concurrency.Task>();
+            queueExceptions = new ProducerConsumer<Exception>();
             threads = new Thread[nThreads];
-
-            for (int i = 0; i < nThreads; i++)
-            {
-                threads[i] = new Thread(Run);
-                threads[i].Start();
-            }
         }
 
         public void Execute(Concurrency.Task task)
         {
-            queue.Enqueue(task);
-            queueUpdate.Set();
+            queueTasks.Enqueue(task);
+            queueTasksUpdate.Set();
         }
         
         /// <summary>
-        /// Метод-"колесо" для просмотра задач в очереди
+        /// Запуск пула потоков
         /// </summary>
-        private void Run()
+        public void StartThreadPool()
+        {
+            if (!poolIsStarted)
+            {
+                for (int i = 0; i < nThreads; i++)
+                {
+                    threads[i] = new Thread(RunThread);
+                    threads[i].Name = (i+1).ToString();
+                    threads[i].Start();
+                }
+                poolIsStarted = true;
+            }
+        }
+
+        private void RunThread()
+        {
+            try
+            {
+                DistributeTasks();
+            }
+            catch (ThreadAbortException abortEx)
+            {
+                // Не обрабатываем принудительное прерывание потока
+                if (poolIsStarted) throw abortEx;
+            }
+            catch (Exception ex)
+            {
+                queueExceptions.Enqueue(ex);
+            }
+        }
+
+        /// <summary>
+        /// Метод - "колесо" для просмотра задач в очереди.
+        /// И распределения полученных задач потокам.
+        /// </summary>
+        private void DistributeTasks()
         {
             Concurrency.Task task;
 
             while (true)
             {
-                lock(queueUpdate) {
-                    while (queue.IsEmpty)
+                lock(queueTasksUpdate)
+                {
+                    while (queueTasks.IsEmpty)
                     {
                         try
                         {
-                            queueUpdate.WaitOne();
+                            queueTasksUpdate.WaitOne();
                         }
                         catch (ThreadInterruptedException e)
                         {
-                            Console.WriteLine("Произошла ошибка во время ожидания очереди: " + e.Message);
+                            throw new ThreadInterruptedException(String.Format("Произошла ошибка во время ожидания очереди для потока {0}: ",
+                                                                Thread.CurrentThread.Name) 
+                                                                + e.Message);
                         }
                     }
                     Interlocked.Increment(ref tasksInProgress);
-                    task = queue.Dequeue();
+                    task = queueTasks.Dequeue();
                 }
 
                 try
                 {
-                    task.Run();
+                    task.StartOperationOnBlock();
                     Interlocked.Decrement(ref tasksInProgress);
                 }
                 catch (SystemException e)
                 {
-                    Console.WriteLine("Пул потоков прервал работу из-за: " + e.Message);
+                    throw new SystemException(String.Format("Поток {0} из пула потоков прервал работу из-за: ",
+                                                            Thread.CurrentThread.Name) 
+                                              + e.Message);
                 }
             }
         }
 
+        public bool QueueExceptionIsEmpty()
+        {
+            bool ret = false; ;
+            lock (queueExceptions)
+            {
+                ret = queueExceptions.IsEmpty;
+            }
+            return ret;
+        }
+
+        public Exception GetThreadsException()
+        {
+            return queueExceptions.Dequeue();
+        }
+
         public bool IsFinished()
         {
-            return queue.IsEmpty && tasksInProgress.Equals(0);
+            return queueTasks.IsEmpty && tasksInProgress.Equals(0);
         }
 
         public void Stop()
         {
-            foreach (var thread in threads)
+            if (poolIsStarted)
             {
-                thread.Abort();
+                poolIsStarted = false;
+                foreach (var thread in threads)
+                {
+                    thread.Abort();
+                }
             }
         }
     }

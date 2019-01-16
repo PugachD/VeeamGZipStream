@@ -50,6 +50,7 @@
     <Compile Include="IO\ReaderWriterFactory.cs" />
     <Compile Include="Models\Block.cs" />
     <Compile Include="Models\BlockMetadata.cs" />
+    <Compile Include="ValidationParams.cs" />
     <Compile Include="ProcessManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -57,7 +58,6 @@
     <Compile Include="Settings\Mode\CompressionMode.cs" />
     <Compile Include="Settings\Mode\Instructions\CompressInstruction.cs" />
     <Compile Include="Settings\Mode\Instructions\DecompressInstruction.cs" />
-    <Compile Include="Settings\Mode\Instructions\Extensions.cs" />
     <Compile Include="Settings\Mode\Instructions\IGZipInstruction.cs" />
   </ItemGroup>
   <ItemGroup>

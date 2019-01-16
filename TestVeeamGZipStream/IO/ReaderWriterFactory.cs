@@ -1,13 +1,18 @@
 ﻿using System.IO;
-using System.IO.Compression;
 
-namespace TestVeeamGZipStream.IO
+namespace VeeamGZipStream.IO
 {
     public sealed class ReaderWriterFactory
     {
-        public FileReaderWriter GetFileReaderWriter(FileStream input, FileStream output)
+        /// <summary>
+        /// Получаем объект чтения-записи
+        /// </summary>
+        /// <param name="reader">Поток чтения</param>
+        /// <param name="writer">Поток записи</param>
+        /// <returns></returns>
+        public FileReaderWriter GetFileReaderWriter(FileStream reader, FileStream writer)
         {
-            return new FileReaderWriter(input, output);
+            return new FileReaderWriter(reader, writer);
         }
     }
 }
